@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 public class Principal extends JFrame {
 
-    private ArrayList<Usuario> usuarios = new ArrayList<>();
-    private JTable tablaUsuarios;
-    private DefaultTableModel modeloTabla;
+    ArrayList<Usuario> usuarios = new ArrayList<>();
+    JTable tablaUsuarios;
+    DefaultTableModel modeloTabla;
 
     public Principal() {
         initComponents();
@@ -22,7 +22,6 @@ public class Principal extends JFrame {
         lblTitulo.setBounds(20, 20, 200, 25);
         add(lblTitulo);
 
-        // Tabla para mostrar los usuarios
         modeloTabla = new DefaultTableModel(new Object[][]{}, new String[]{"Nombre", "Edad", "Saldo"});
         tablaUsuarios = new JTable(modeloTabla);
         JScrollPane scrollPane = new JScrollPane(tablaUsuarios);
@@ -34,25 +33,61 @@ public class Principal extends JFrame {
         btnAgregar.addActionListener(e -> abrirVentanaAgregar());
         add(btnAgregar);
 
+        JButton btnEditar = new JButton("Editar Usuario");
+        btnEditar.setBounds(200, 280, 150, 25);
+        btnEditar.addActionListener(e -> editarUsuario());
+        add(btnEditar);
+
+        JButton btnEliminar = new JButton("Eliminar Usuario");
+        btnEliminar.setBounds(380, 280, 150, 25);
+        btnEliminar.addActionListener(e -> eliminarUsuario());
+        add(btnEliminar);
+
         JButton btnImprimir = new JButton("Imprimir PDF");
-        btnImprimir.setBounds(200, 280, 150, 25);
+        btnImprimir.setBounds(20, 320, 150, 25);
         btnImprimir.addActionListener(e -> generarPDF());
         add(btnImprimir);
 
         JButton btnSalir = new JButton("Salir");
-        btnSalir.setBounds(380, 280, 150, 25);
+        btnSalir.setBounds(380, 320, 150, 25);
         btnSalir.addActionListener(e -> System.exit(0));
         add(btnSalir);
     }
 
     private void abrirVentanaAgregar() {
-        AddUserFrame addUserFrame = new AddUserFrame(this);
+        agregarUsuarios addUserFrame = new agregarUsuarios(this);
         addUserFrame.setVisible(true);
     }
 
+    private void editarUsuario() {
+        int selectedRow = tablaUsuarios.getSelectedRow();
+        if (selectedRow >= 0) {
+            Usuario usuario = usuarios.get(selectedRow);
+            agregarUsuarios editFrame = new agregarUsuarios(this, usuario, selectedRow);
+            editFrame.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "Seleccione un usuario para editar.");
+        }
+    }
+
+    private void eliminarUsuario() {
+        int selectedRow = tablaUsuarios.getSelectedRow();
+        if (selectedRow >= 0) {
+            usuarios.remove(selectedRow);
+            modeloTabla.removeRow(selectedRow);
+            JOptionPane.showMessageDialog(this, "Usuario eliminado con éxito.");
+        } else {
+            JOptionPane.showMessageDialog(this, "Seleccione un usuario para eliminar.");
+        }
+    }
+
     public void agregarUsuario(Usuario usuario) {
-        usuarios.add(usuario);
-        modeloTabla.addRow(new Object[]{usuario.getNombre(), usuario.getEdad(), usuario.getSaldo()});
+        if (usuario.validarDatos()) {
+            usuarios.add(usuario);
+            modeloTabla.addRow(new Object[]{usuario.getNombre(), usuario.getEdad(), usuario.getSaldo()});
+        } else {
+            JOptionPane.showMessageDialog(this, "Datos inválidos para el usuario.");
+        }
     }
 
     private void generarPDF() {
@@ -75,3 +110,4 @@ public class Principal extends JFrame {
         SwingUtilities.invokeLater(() -> new Principal().setVisible(true));
     }
 }
+    

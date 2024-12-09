@@ -9,7 +9,10 @@ public class Usuario {
         this.saldo = saldo;
     }
 
-    // Getters y Setters
+    public Usuario() {
+        // Constructor vacío para inicialización en herencias
+    }
+
     public String getNombre() {
         return nombre;
     }
@@ -34,8 +37,12 @@ public class Usuario {
         this.saldo = saldo;
     }
 
+    public boolean validarDatos() {
+        return nombre != null && !nombre.isEmpty() && edad > 0 && saldo >= 0;
+    }
+
     @Override
     public String toString() {
-        return "Usuario{" + "nombre=" + nombre + ", edad=" + edad + ", saldo=" + saldo + '}';
+        return "Usuario{" + "nombre='" + nombre + '\'' + ", edad=" + edad + ", saldo=" + saldo + '}';
     }
 }

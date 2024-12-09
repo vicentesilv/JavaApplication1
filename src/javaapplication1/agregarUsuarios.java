@@ -1,13 +1,23 @@
 import javax.swing.*;
 
-public class AddUserFrame extends JFrame {
+public class agregarUsuarios extends JFrame {
 
     private JTextField txtNombre, txtEdad, txtSaldo;
     private Principal mainFrame;
+    private int editingIndex = -1;
 
-    public AddUserFrame(Principal mainFrame) {
+    public agregarUsuarios(Principal mainFrame) {
         this.mainFrame = mainFrame;
         initComponents();
+    }
+
+    public agregarUsuarios(Principal mainFrame, Usuario usuario, int editingIndex) {
+        this(mainFrame);
+        this.editingIndex = editingIndex;
+
+        txtNombre.setText(usuario.getNombre());
+        txtEdad.setText(String.valueOf(usuario.getEdad()));
+        txtSaldo.setText(String.valueOf(usuario.getSaldo()));
     }
 
     private void initComponents() {
@@ -57,10 +67,23 @@ public class AddUserFrame extends JFrame {
             int edad = Integer.parseInt(txtEdad.getText());
             double saldo = Double.parseDouble(txtSaldo.getText());
 
-            Usuario nuevoUsuario = new Usuario(nombre, edad, saldo);
-            mainFrame.agregarUsuario(nuevoUsuario);
-            JOptionPane.showMessageDialog(this, "Usuario agregado con éxito!");
-            dispose();
+            Usuario usuario = new Usuario(nombre, edad, saldo);
+            if (usuario.validarDatos()) {
+                if (editingIndex >= 0) { // Editar usuario existente
+                    mainFrame.usuarios.set(editingIndex, usuario);
+                    mainFrame.modeloTabla.setValueAt(nombre, editingIndex, 0);
+                    mainFrame.modeloTabla.setValueAt(edad, editingIndex, 1);
+                    mainFrame.modeloTabla.setValueAt(saldo, editingIndex, 2);
+
+                    JOptionPane.showMessageDialog(this, "Usuario editado con éxito!");
+                } else {
+                    mainFrame.agregarUsuario(usuario);
+                    JOptionPane.showMessageDialog(this, "Usuario agregado con éxito!");
+                }
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Datos inválidos para el usuario.");
+            }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al guardar el usuario. Verifique los datos.");
         }
